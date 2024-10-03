@@ -3,11 +3,14 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shopping_cart_may/model/product_list_res_model.dart';
 
 class HomeScreenController with ChangeNotifier {
   int selectedcategoryIndex = 0;
   bool isLoading = false;
+  bool isProductsLoading = false;
   List categoriesList = ["All"]; //to store categories form api
+  List<ProductModel> listOfProducts = [];
 
   Future<void> getCategories() async {
     categoriesList = ["All"];
@@ -30,9 +33,43 @@ class HomeScreenController with ChangeNotifier {
   void onCategorySelection(int index) {
     selectedcategoryIndex = index;
     notifyListeners();
+    if (selectedcategoryIndex == 0) {
+      getAllProducts();
+    } else {
+      getProductsByCategory(categoriesList[selectedcategoryIndex]);
+    }
   }
 
-  void getAllProducts() {}
+  Future<void> getAllProducts() async {
+    isProductsLoading = true;
+    notifyListeners();
+    final url = Uri.parse("https://fakestoreapi.com/products");
+    try {
+      var response = await http.get(url);
+      if (response.statusCode == 200) {
+        listOfProducts = productModelFromJson(response.body);
+      }
+    } catch (e) {
+      print(e);
+    }
+    isProductsLoading = false;
+    notifyListeners();
+  }
 
-  void getProductsByCategory() {}
+  Future<void> getProductsByCategory(String category) async {
+    isProductsLoading = true;
+    notifyListeners();
+    final url =
+        Uri.parse("https://fakestoreapi.com/products/category/$category");
+    try {
+      var response = await http.get(url);
+      if (response.statusCode == 200) {
+        listOfProducts = productModelFromJson(response.body);
+      }
+    } catch (e) {
+      print(e);
+    }
+    isProductsLoading = false;
+    notifyListeners();
+  }
 }
