@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:provider/provider.dart';
+import 'package:shopping_cart_may/controller/cart_screen_controller.dart';
+import 'package:shopping_cart_may/main.dart';
 import 'package:shopping_cart_may/view/cart_screen/widgets/cart_item_widget.dart';
 
 class CartScreen extends StatefulWidget {
@@ -12,11 +15,17 @@ class CartScreen extends StatefulWidget {
 class _CartScreenState extends State<CartScreen> {
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback(
+      (timeStamp) {
+        context.read<CartScreenController>().getProducts();
+      },
+    );
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final providerObj = context.watch<CartScreenController>();
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -27,18 +36,19 @@ class _CartScreenState extends State<CartScreen> {
             child: ListView.separated(
                 itemBuilder: (context, index) {
                   return CartItemWidget(
-                    title: "title",
-                    desc: "desc",
-                    qty: "qty",
-                    image:
-                        "https://images.pexels.com/photos/28518049/pexels-photo-28518049/free-photo-of-winter-wonderland-by-a-frozen-river.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+                    title: providerObj.cart[index].name.toString(),
+                    desc: providerObj.cart[index].desc.toString(),
+                    qty: providerObj.cart[index].qty.toString(),
+                    image: providerObj.cart[index].image.toString(),
                     onIncrement: () {},
                     onDecrement: () {},
-                    onRemove: () {},
+                    onRemove: () {
+                      context.read<CartScreenController>().removeProcuct(index);
+                    },
                   );
                 },
                 separatorBuilder: (context, index) => SizedBox(height: 15),
-                itemCount: 2)),
+                itemCount: providerObj.cart.length)),
       ),
     );
   }

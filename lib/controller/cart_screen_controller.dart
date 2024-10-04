@@ -7,13 +7,13 @@ class CartScreenController with ChangeNotifier {
   List<CartModel> cart = [];
   List keys = [];
 
-  void addProduct(
+  Future<void> addProduct(
       {required String name,
       String? image,
       String? desc,
       required int id,
-      required double price}) {
-    cartbox.add(CartModel(
+      required double price}) async {
+    await cartbox.add(CartModel(
       name: name,
       id: id,
       desc: desc,
@@ -22,11 +22,21 @@ class CartScreenController with ChangeNotifier {
       qty: 1,
     ));
 
-    keys = cartbox.keys.toList();
+    getProducts();
   }
 
-  void getProducts() {}
-  void removeProcuct() {}
+  void getProducts() {
+    keys = cartbox.keys.toList();
+    cart = cartbox.values.toList();
+    notifyListeners();
+    debugPrint(keys.toString());
+  }
+
+  void removeProcuct(int index) {
+    cartbox.deleteAt(index);
+    getProducts();
+  }
+
   void incrementQty() {}
   void decrementQty() {}
 }
