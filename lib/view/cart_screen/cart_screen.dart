@@ -37,11 +37,15 @@ class _CartScreenState extends State<CartScreen> {
                 itemBuilder: (context, index) {
                   return CartItemWidget(
                     title: providerObj.cart[index].name.toString(),
-                    desc: providerObj.cart[index].desc.toString(),
+                    desc: providerObj.cart[index].price.toString(),
                     qty: providerObj.cart[index].qty.toString(),
                     image: providerObj.cart[index].image.toString(),
-                    onIncrement: () {},
-                    onDecrement: () {},
+                    onIncrement: () {
+                      context.read<CartScreenController>().incrementQty(index);
+                    },
+                    onDecrement: () {
+                      context.read<CartScreenController>().decrementQty(index);
+                    },
                     onRemove: () {
                       context.read<CartScreenController>().removeProcuct(index);
                     },
